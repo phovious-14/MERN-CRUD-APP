@@ -7,6 +7,8 @@ route.post("/api/signup", controller.signup)
 
 route.post("/api/login", controller.login)
 
+route.get("/api/token", controller.token)
+
 route.get("/api/about", authenticate, controller.about)
 
 route.get("/api/logout", authenticate, controller.logout)
@@ -14,5 +16,9 @@ route.get("/api/logout", authenticate, controller.logout)
 route.post("/api/addProject", authenticate, controller.addProject)
 
 route.get("/api/getProject", authenticate, controller.getProject)
+
+route.get("/user", (req, res) => {
+    console.log("hi");
+})
  
 module.exports = route

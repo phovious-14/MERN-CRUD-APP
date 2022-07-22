@@ -36,23 +36,23 @@ exports.signup = async (req,res) => {
 exports.login = async (req,res) => {
     try{
 
-        const {email,password} = req.body
+        const { email, password } = req.body
 
         if(!email || !password){
             return res.status(400).json({messege:"fields are necessary"})
         }
+        
+        const userExist = await userModel.findOne({email})     
+        // console.log(req.body);
 
-        const userExist = await userModel.findOne({email})
-
-        if(userExist){                    
-            
+        if(userExist){               
             if(password == userExist.password){                      
                 
                 const token = await userExist.genAuthToken()
                 res.cookie("jwtoken",token,{
                     expires:new Date( Date.now() + 1 * 3600 * 1000 ),
                     httpOnly:true
-                }).status(200).json({messege:"Token-cookie generated"}) 
+                }).status(200).json({token}) 
             }
             else{
                 return res.status(401).json({messege:"Invalid credentials"})
@@ -73,7 +73,10 @@ exports.about = async (req,res) => {
         if(req.rootUserId){
             
             const id = req.rootUserId
-            const data = await userModel.findOne({id})
+            // console.log(id);
+            const data = await userModel.findOne({_id:id})
+            // console.log(data._id);
+            // console.log(data);
             res.status(200).json({data})
 
         } else {
@@ -89,6 +92,7 @@ exports.logout = (req,res) => {
     try{
         res.clearCookie("jwtoken",{path:"/"})
         res.status(200).json({msg:"logout"})
+        // console.log("logout successfully!");
     } catch(err) {
         console.log(err);
     }
@@ -99,9 +103,9 @@ exports.addProject = async (req, res) => {
 
         const id = req.rootUserId;
 
-        const { name, description, startDate, endDate, categories } = req.body
+        const { title, desc, startD, endD, choice } = req.body
 
-        if(!name || !description || !startDate || !endDate || !categories){
+        if(!title || !desc || !startD || !endD || !choice){
             return res.status(400).json({messege:"fields are necessary"})  
         }
 
@@ -115,28 +119,17 @@ exports.addProject = async (req, res) => {
         
         //find by enrollment number, than push activity in array,if no enrollment number found than create new object and push activity by {upsert:true}
         //if any error occur than handle it through last argument of findOneAndUpdate()
-        projectModel.findOneAndUpdate({userId: id},{
-
-            $push:{
-                projects:{
-                    name,
-                    description,
-                    startDate,
-                    endDate,
-                    categories
-                }
-            },
+        const project = new projectModel({
+            name: title,
+            description: desc,
+            startDate: startD,
+            endDate: endD,
+            categories: choice,
             userId:id
-
-        }, { upsert:true },
-        (err) => {
-            if(err) {
-                return res.status(401).json({messege: "Something went wrong"});
-            }
-            else{
-                return res.status(200).json({messege: "Project added successfully"});
-            }
-        });        
+        })
+        // console.log(project);
+        await project.save()
+        res.status(200).json({messege:"Project added successfully!"})  
         
     } catch (err) {
         console.log(err);
@@ -148,11 +141,16 @@ exports.getProject = async (req, res) => {
     try {
 
         const id = req.rootUserId;
-        const data =  await projectModel.findOne({ userId: id });
-
+        const data =  await projectModel.find({ userId: id });
+        // console.log(data);
         res.status(200).json({data})
         
     } catch (error) {
         console.log(error);
     }
+}
+
+exports.token = async (req, res) => {
+    console.log(req.cookies.jwtoken);
+    res.json({ token: req.cookies.jwtoken })
 }
