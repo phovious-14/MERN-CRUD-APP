@@ -42,23 +42,20 @@ exports.login = async (req,res) => {
             return res.status(400).json({messege:"fields are necessary"})
         }
         
-        const userExist = await userModel.findOne({email})     
+        const userExist = await userModel.findOne({email, password}) 
         // console.log(req.body);
 
-        if(userExist){               
-            if(password == userExist.password){                      
+        if(userExist){                                
                 
+            if(userExist.email === 'admin@gmail.com' && userExist.password === "admin123"){
+                const adminToken = await userExist.genAuthToken()
+                res.status(200).json({adminToken}) 
+            } else {
                 const token = await userExist.genAuthToken()
-                res.cookie("jwtoken",token,{
-                    expires:new Date( Date.now() + 1 * 3600 * 1000 ),
-                    httpOnly:true
-                }).status(200).json({token}) 
-            }
-            else{
-                return res.status(401).json({messege:"Invalid credentials"})
-            }
+                res.status(200).json({token}) 
+            }            
 
-        }else{
+        } else {
             res.status(401).json({messege:"Invalid credentials"})
         }
 
