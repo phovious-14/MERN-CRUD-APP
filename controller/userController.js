@@ -1,5 +1,5 @@
 // const bcrypt = require("bcryptjs")
-const projectModel = require("../model/projectModel")
+const movieModel = require("../model/movieModel")
 const userModel = require("../model/userModel")
 
 exports.signup = async (req,res) => {
@@ -101,59 +101,71 @@ exports.logout = (req,res) => {
     }
 }
 
-exports.addProject = async (req, res) => {
-    try {    
+// exports.addProject = async (req, res) => {
+//     try {    
 
-        const id = req.rootUserId;
+//         const id = req.rootUserId;
 
-        const { title, desc, startD, endD, choice } = req.body
+//         const { title, desc, startD, endD, choice } = req.body
 
-        if(!title || !desc || !startD || !endD || !choice){
-            return res.status(400).json({messege:"fields are necessary"})  
-        }
+//         if(!title || !desc || !startD || !endD || !choice){
+//             return res.status(400).json({messege:"fields are necessary"})  
+//         }
 
-        //check if student exist in student model or not
-        const isUserExist = await userModel.findOne({ id });
+//         //check if student exist in student model or not
+//         const isUserExist = await userModel.findOne({ id });
 
-            //if student doesn't exist than throw error
-            if(!isUserExist) {
-                return res.status(400).json({messege: "User does not exist"});
-            }
+//             //if student doesn't exist than throw error
+//             if(!isUserExist) {
+//                 return res.status(400).json({messege: "User does not exist"});
+//             }
         
-        //find by enrollment number, than push activity in array,if no enrollment number found than create new object and push activity by {upsert:true}
-        //if any error occur than handle it through last argument of findOneAndUpdate()
-        const project = new projectModel({
-            name: title,
-            description: desc,
-            startDate: startD,
-            endDate: endD,
-            categories: choice,
-            userId:id
-        })
-        // console.log(project);
-        await project.save()
-        res.status(200).json({messege:"Project added successfully!"})  
+//         //find by enrollment number, than push activity in array,if no enrollment number found than create new object and push activity by {upsert:true}
+//         //if any error occur than handle it through last argument of findOneAndUpdate()
+//         const project = new projectModel({
+//             name: title,
+//             description: desc,
+//             startDate: startD,
+//             endDate: endD,
+//             categories: choice,
+//             userId:id
+//         })
+//         // console.log(project);
+//         await project.save()
+//         res.status(200).json({messege:"Project added successfully!"})  
         
-    } catch (err) {
-        console.log(err);
-        res.status(401).json({messege:"error in uploading"})
-    }
+//     } catch (err) {
+//         console.log(err);
+//         res.status(401).json({messege:"error in uploading"})
+//     }
+// }
+
+// exports.getProject = async (req, res) => {
+//     try {
+
+//         const id = req.rootUserId;
+//         const data =  await projectModel.find({ userId: id });
+//         // console.log(data);
+//         res.status(200).json({data})
+        
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+exports.token = async (req, res) => {
+    console.log(req.cookies.jwtoken);
+    res.json({ token: req.cookies.jwtoken })
 }
 
-exports.getProject = async (req, res) => {
+exports.getMovies = async (req, res) => {
     try {
 
-        const id = req.rootUserId;
-        const data =  await projectModel.find({ userId: id });
+        const data =  await movieModel.find();
         // console.log(data);
         res.status(200).json({data})
         
     } catch (error) {
         console.log(error);
     }
-}
-
-exports.token = async (req, res) => {
-    console.log(req.cookies.jwtoken);
-    res.json({ token: req.cookies.jwtoken })
 }

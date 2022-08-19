@@ -13,9 +13,11 @@ route.get("/api/about", authenticate, controller.about)
 
 route.get("/api/logout", authenticate, controller.logout)
 
-route.post("/api/addProject", authenticate, controller.addProject)
+// route.post("/api/addProject", authenticate, controller.addProject)
 
-route.get("/api/getProject", authenticate, controller.getProject)
+// route.get("/api/getProject", authenticate, controller.getProject)
+
+route.get("/api/getMovies", controller.getMovies)
 
 route.get("/user", (req, res) => {
     console.log("hi");
