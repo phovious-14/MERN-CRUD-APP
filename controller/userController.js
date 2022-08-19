@@ -41,7 +41,7 @@ exports.login = async (req,res) => {
         if(!email || !password){
             return res.status(400).json({messege:"fields are necessary"})
         }
-        
+
         const userExist = await userModel.findOne({email, password}) 
         // console.log(req.body);
 
@@ -49,10 +49,16 @@ exports.login = async (req,res) => {
                 
             if(userExist.email === 'admin@gmail.com' && userExist.password === "admin123"){
                 const adminToken = await userExist.genAuthToken()
-                res.status(200).json({adminToken}) 
+                res.cookie("adminjwtoken", token, {
+                    expires:new Date( Date.now() + 60*60*1000 ), // set jwt for 1 hour
+                    httpOnly:true
+                }).status(200).json({adminToken}) 
             } else {
                 const token = await userExist.genAuthToken()
-                res.status(200).json({token}) 
+                res.cookie("jwtoken", token, {
+                    expires:new Date( Date.now() + 60*60*1000 ), // set jwt for 1 hour
+                    httpOnly:true
+                }).status(200).json({token}) 
             }            
 
         } else {
