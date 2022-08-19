@@ -49,7 +49,7 @@ exports.login = async (req,res) => {
                 
             if(userExist.email === 'admin@gmail.com' && userExist.password === "admin123"){
                 const adminToken = await userExist.genAuthToken()
-                res.cookie("adminjwtoken", token, {
+                res.cookie("adminjwtoken", adminToken, {
                     expires:new Date( Date.now() + 60*60*1000 ), // set jwt for 1 hour
                     httpOnly:true
                 }).status(200).json({adminToken}) 

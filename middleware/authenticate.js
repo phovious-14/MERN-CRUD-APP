@@ -23,8 +23,7 @@ const authenticate = async (req,res,next) => {
         req.token = token // add token to request
         req.rootUserId = rootUser.id // getting whole documetn of user
 
-        next()
-        
+        next()        
 
     } catch (error) {
         res.status(403).send("unauthorized token provided")
